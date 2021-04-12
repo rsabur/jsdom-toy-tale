@@ -1,4 +1,5 @@
 let addToy = false;
+const form = document.querySelector("body > div.container > form")
 
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
@@ -38,8 +39,6 @@ function renderOneToy(toyObj) {
   <button class="like-btn">Like <3</button>
 `
 
-
-
   const collectionDiv = document.querySelector('div#toy-collection')
   collectionDiv.append(outerDiv)
 }
@@ -52,10 +51,8 @@ form.addEventListener('submit', function (event) {
 
   const newToyObj = {
     name: event.target.name.value,
-    image: event.target.url.value,
+    image: event.target.image.value,
     likes: 0
-
-
   }
 
   fetch("http://localhost:3000/toys", {
@@ -63,7 +60,7 @@ form.addEventListener('submit', function (event) {
     headers:
     {
       "Content-Type": "application/json",
-      Accept: "application/json"
+      "Accept": "application/json"
     },
 
     body: JSON.stringify(newToyObj)
@@ -75,7 +72,29 @@ form.addEventListener('submit', function (event) {
   form.reset()
 })
 
+const collectionUl = document.querySelector('div#toy-collection')
+collectionUl.addEventListener('click', event => {
+  event.target.matches('.like-btn')
+    console.log("clicked")
+    const cardDiv = event.target.closest('div.card')
+    const likesPTag = cardDiv.querySelector('div.card p')
+    const currLikes = parseInt(likesPTag.textContent)
 
+    fetch(`http://localhost:3000/toys/${cardDiv.dataset.id}`), {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        "likes": currLikes + 1
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        likesPTag.textContent = `${data.likes} Likes`
+      })
+    }
+})
 
 
 
