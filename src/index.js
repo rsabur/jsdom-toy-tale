@@ -13,3 +13,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+function renderAllToys() {
+  fetch('http://localhost:3000/toys')
+    .then(resp => resp.json())
+    .then(toysArr => {
+      toysArr.forEach(toyObj => {
+        renderOneToy(toyObj)
+      })
+    })
+}
+
+function renderOneToy(toyObj) {
+  const outerDiv = document.createElement('div')
+  // console.log(outerDiv)
+  outerDiv.classList.add('card')
+  outerDiv.dataset.id = toyObj.id
+
+  // outerDiv.html = `
+  // <div class = `
+  const collectionDiv = document.querySelector('div#toy-collection')
+  collectionDiv.append(outerDiv)
+}
+
+
+// id, name, img, likes
