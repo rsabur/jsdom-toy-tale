@@ -1,5 +1,7 @@
 let addToy = false;
-const form = document.querySelector("body > div.container > form")
+const form = document.querySelector(".add-toy-form")
+const toyCollection = document.querySelector('div#toy-collection')
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
@@ -39,14 +41,14 @@ function renderOneToy(toyObj) {
   <button class="like-btn">Like <3</button>
 `
 
-  const collectionDiv = document.querySelector('div#toy-collection')
-  collectionDiv.append(outerDiv)
+
+  toyCollection.append(outerDiv)
 }
 
 
 
 
-form.addEventListener('submit', function (event) {
+form.addEventListener('submit', event => {
   event.preventDefault()
 
   const newToyObj = {
@@ -72,32 +74,38 @@ form.addEventListener('submit', function (event) {
   form.reset()
 })
 
-const collectionUl = document.querySelector('div#toy-collection')
-collectionUl.addEventListener('click', event => {
-  event.target.matches('.like-btn')
-    console.log("clicked")
-    const cardDiv = event.target.closest('div.card')
-    const likesPTag = cardDiv.querySelector('div.card p')
-    const currLikes = parseInt(likesPTag.textContent)
 
-    fetch(`http://localhost:3000/toys/${cardDiv.dataset.id}`), {
-      method: 'PATCH',
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        "likes": currLikes + 1
-      })
-      .then(resp => resp.json())
-      .then(data => {
-        likesPTag.textContent = `${data.likes} Likes`
-      })
-    }
+toyCollection.addEventListener('click', event => {
+  if (event.target.className === 'like-btn') likeToy(event.target)
+  event.preventDefault()
 })
+
+function likeToy(toyElement) {
+  // console.log(toyElement.closest('div.card'))
+  const cardDiv = toyElement.closest('div.card')
+  const likesPTag = cardDiv.querySelector('div.card p')
+  let currLikes = parseInt(likesPTag.textContent)
+  // likesPTag.textContent = `${currLikes + 1} Likes`
+  // console.log(currLikes)
+
+  fetch(`http://localhost:3000/toys/${cardDiv.dataset.id}`, {
+    method: 'PATCH',
+    headers:
+    {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify({
+      likes: currLikes + 1
+    })
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      likesPTag.textContent = `${data.likes} Likes`
+    })
+}
 
 
 
 renderAllToys()
 
-// id, name, img, likes
